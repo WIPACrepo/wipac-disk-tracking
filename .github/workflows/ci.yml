@@ -1,8 +1,12 @@
-name: CI/CD
+name: CI
 
 on:
-  push:
   pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 
 env: 
   CARGO_TERM_COLOR: always
@@ -32,4 +36,12 @@ jobs:
       - run: cargo build --verbose
       - run: cargo test --verbose
 
-  # TODO: release
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: false

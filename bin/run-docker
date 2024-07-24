@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# run-docker
+
+docker run \
+    --detach \
+    --env=RUST_LOG=debug \
+    --name=wipac_disk_tracking \
+    --publish 8080:8080 \
+    --rm \
+    wipac-disk-tracking:latest-SNAPSHOT

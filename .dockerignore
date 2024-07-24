@@ -1,0 +1,38 @@
+# Ignore the target directory where Cargo builds your project
+target
+
+# Ignore any files related to version control
+.git
+.gitignore
+
+# Ignore build artifacts
+**/*.rs.bk
+
+# Ignore IDE and editor directories and files
+.idea
+.vscode
+*.iml
+
+# Ignore temporary files
+*.swp
+*.tmp
+*.temp
+*.bak
+*.old
+*.log
+
+# Ignore node_modules (if you have any Node.js dependencies)
+node_modules
+
+# Ignore Docker-related files (if you don't want them in your image)
+.dockerignore
+Dockerfile
+
+# Ignore any other local configuration files
+*.local
+
+# Ignore any potential secrets or sensitive files
+.env
+*.secret
+*.key
+*.pem

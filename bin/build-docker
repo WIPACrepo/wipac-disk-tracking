@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# build-docker
+
+docker buildx build \
+    --file Dockerfile \
+    --tag wipac-disk-tracking:latest-SNAPSHOT \
+    .
