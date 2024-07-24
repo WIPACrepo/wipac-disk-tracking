@@ -2,9 +2,8 @@
 
 use gotham::{router::response::StaticResponseExtender, state::StateData};
 use gotham_restful::{create, read, search, Resource, Success};
-use log::{error, info};
+use log::info;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
 
 #[derive(Resource, Serialize)]
 #[resource(create_event)]
@@ -23,11 +22,11 @@ pub struct EventResources {
 
 #[derive(Clone, Deserialize, StateData, StaticResponseExtender)]
 struct EventBody {
-    serial_number: String,
+    _serial_number: String,
 }
 
 #[create]
-fn create_event(body: EventBody) -> Success<EventResource> {
+fn create_event(_body: EventBody) -> Success<EventResource> {
     info!("create_event()");
     EventResource { id: 0 }.into()
 }
@@ -36,15 +35,13 @@ fn create_event(body: EventBody) -> Success<EventResource> {
 
 #[derive(Clone, Deserialize, StateData, StaticResponseExtender)]
 struct EventSearchQuery {
-    serial_number: String,
+    _serial_number: String,
 }
 
 #[search]
-fn find_event_by_query(query: EventSearchQuery) -> Success<EventResources> {
+fn find_event_by_query(_query: EventSearchQuery) -> Success<EventResources> {
     info!("find_event_by_query()");
-    EventResources {
-        events: Vec::new(),
-    }.into()
+    EventResources { events: Vec::new() }.into()
 }
 
 // --------------------------------------------------------------------------------------------------------------------
