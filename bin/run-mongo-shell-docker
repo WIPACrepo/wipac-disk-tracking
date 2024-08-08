@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# run-mongo-shell-docker
+
+docker run \
+    --interactive \
+    --network="host" \
+    --rm \
+    --tty \
+    mongo:latest \
+    mongosh --host localhost:27017 -u "root" -p "hunter2" --authenticationDatabase "admin"

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# run-mongo-docker
+
+    # --detach \
+    # --rm \
+docker run \
+    --env=MONGODB_DATABASE=disk_tracking \
+    --env=MONGODB_PASSWORD=hunter2 \
+    --env=MONGODB_ROOT_PASSWORD=hunter2 \
+    --env=MONGODB_USERNAME=disk_tracking \
+    --name=disk_tracking_mongo \
+    --publish 27017:27017 \
+    bitnami/mongodb:latest

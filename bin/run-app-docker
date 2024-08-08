@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# run-app-docker
+
+docker run \
+    --detach \
+    --env=MONGODB_HOSTNAME=disk_tracking_mongo \
+    --env=MONGODB_PASSWORD=hunter2 \
+    --env=MONGODB_PORT=27017 \
+    --env=MONGODB_USERNAME=disk_tracking \
+    --env=RUST_LOG=debug \
+    --link disk_tracking_mongo:disk_tracking_mongo \
+    --name=disk_tracking \
+    --publish 8080:8080 \
+    --rm \
+    wipac-disk-tracking:latest-SNAPSHOT
