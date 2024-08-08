@@ -10,11 +10,10 @@ pub mod error;
 //     response::IntoResponse,
 //     http::StatusCode,
 // };
-use mongodb::{Client, options::ClientOptions};
 // use serde_json::json;
 // use std::net::SocketAddr;
 
-use context::{build_context, ApplicationContext};
+use context::build_context;
 use database::{count_disk_events, setup_mongo};
 use error::{get_error_message, Result};
 
@@ -22,10 +21,10 @@ use error::{get_error_message, Result};
 async fn main() {
     // initialize logging, configured by environment
     env_logger::init();
-
+    // run the application
     match do_main().await {
         Err(e) => eprintln!("Error: {}", get_error_message(e)),
-        Ok(_) => {},
+        Ok(_) => {}
     }
 }
 
@@ -35,7 +34,9 @@ async fn do_main() -> Result<()> {
     println!("{:?}", context);
     println!("{}", context.get_mongo_url());
 
-    let client = setup_mongo(&context).await.expect("Unable to initialize MongoDB client");
+    let client = setup_mongo(&context)
+        .await
+        .expect("Unable to initialize MongoDB client");
     let count = count_disk_events(&context, &client).await?;
     println!("{}", count);
 

@@ -1,13 +1,25 @@
 #!/usr/bin/env bash
 # run-mongo-docker
 
-    # --detach \
-    # --rm \
+# use `docker run` to create a TEMPORARY instance of MongoDB in a
+# Docker container for development/testing purposes. when starting
+# this script, you can provide one of the environment variables listed
+# below to override the defaults
+
+: ${DOCKER_CONTAINER_NAME:="disk_tracking_mongo"}
+: ${MONGODB_DATABASE:="disk_tracking"}
+: ${MONGODB_PASSWORD:="hunter2"}
+: ${MONGODB_USERNAME:="disk_tracking"}
+: ${MONGODB_PORT_NUMBER:="27017"}
+
 docker run \
-    --env=MONGODB_DATABASE=disk_tracking \
-    --env=MONGODB_PASSWORD=hunter2 \
+    --detach \
+    --env=MONGODB_DATABASE=${MONGODB_DATABASE} \
+    --env=MONGODB_PASSWORD=${MONGODB_PASSWORD} \
     --env=MONGODB_ROOT_PASSWORD=hunter2 \
-    --env=MONGODB_USERNAME=disk_tracking \
-    --name=disk_tracking_mongo \
-    --publish 27017:27017 \
+    --env=MONGODB_USERNAME=${MONGODB_USERNAME} \
+    --env=MONGODB_PORT_NUMBER=${MONGODB_PORT_NUMBER} \
+    --name=${DOCKER_CONTAINER_NAME} \
+    --publish ${MONGODB_PORT_NUMBER}:${MONGODB_PORT_NUMBER} \
+    --rm \
     bitnami/mongodb:latest

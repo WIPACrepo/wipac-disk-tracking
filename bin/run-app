@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # run-app
 
+# use `cargo run` to run an instance of the application locally
+# when starting this script, you can provide one of the environment
+# variables listed below to override the defaults
+
 export MONGODB_DATABASE=${MONGODB_DATABASE:="disk_tracking"}
 export MONGODB_HOSTNAME=${MONGODB_HOSTNAME:="localhost"}
 export MONGODB_PASSWORD=${MONGODB_PASSWORD:="hunter2"}
-export MONGODB_PORT=${MONGODB_PORT:="27017"}
-# export MONGODB_USERNAME=${MONGODB_USERNAME:="disk_tracking"}
-export MONGODB_USERNAME=${MONGODB_USERNAME:="root"}
+export MONGODB_PORT_NUMBER=${MONGODB_PORT_NUMBER:="27017"}
+export MONGODB_USERNAME=${MONGODB_USERNAME:="disk_tracking"}
+export PORT=${PORT:="8080"}
 export RUST_LOG=${RUST_LOG:="debug"}
 
 cargo run --bin wipac-disk-tracking

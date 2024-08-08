@@ -24,10 +24,10 @@ pub fn get_error_message(e: ApplicationError) -> String {
     match e {
         ApplicationError::ContextError(x) => {
             format!("disk-tracking: Unable to build application context: {x}")
-        },
+        }
         ApplicationError::MongoError(x) => {
             format!("disk-tracking: Database error: {x}")
-        },
+        }
     }
 }
 

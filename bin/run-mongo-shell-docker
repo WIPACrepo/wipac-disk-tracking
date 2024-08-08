@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
 # run-mongo-shell-docker
 
+# use `docker run` to create an interactive mongoshell that connects to
+# the TEMPORARY instance of MongoDB for development/testing purposes.
+# when starting this script, you can provide one of the environment
+# variables listed below to override the defaults
+
+: ${MONGODB_DATABASE:="disk_tracking"}
+: ${MONGODB_HOSTNAME:="localhost"}
+: ${MONGODB_PASSWORD:="hunter2"}
+: ${MONGODB_USERNAME:="disk_tracking"}
+: ${MONGODB_PORT_NUMBER:="27017"}
+
 docker run \
     --interactive \
     --network="host" \
     --rm \
     --tty \
     mongo:latest \
-    mongosh --host localhost:27017 -u "root" -p "hunter2" --authenticationDatabase "admin"
+    mongosh --host ${MONGODB_HOSTNAME}:${MONGODB_PORT_NUMBER} -u "${MONGODB_USERNAME}" -p "${MONGODB_PASSWORD}" --authenticationDatabase "${MONGODB_DATABASE}"
