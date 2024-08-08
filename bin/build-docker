@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 # build-docker
 
+# use `docker buildx build` to create a Docker image of the application
+# by default the image is `wipac-disk-tracking:latest-SNAPSHOT` unless
+# you set the BUILD_TAG environment variable before calling the script
+
+: ${BUILD_TAG:="latest-SNAPSHOT"}
+
 docker buildx build \
     --file Dockerfile \
-    --tag wipac-disk-tracking:latest-SNAPSHOT \
+    --tag wipac-disk-tracking:${BUILD_TAG} \
     .
