@@ -1,41 +1,87 @@
 // database.rs
 
-use mongodb::{bson::document::Document, options::ClientOptions, Client};
+use futures_util::stream::TryStreamExt;
+use mongodb::{
+    bson::{doc, document::Document},
+    results::InsertOneResult,
+};
+use uuid::Uuid;
 
 use crate::context::ApplicationContext;
 use crate::error::Result;
+use crate::event::DiskEvent;
 
-const DISK_EVENT_COLLECTION: &str = "disk_event";
+pub const DISK_EVENTS_COLLECTION: &str = "disk_events";
 
-struct DiskEvent;
+pub async fn count_disk_events(context: &ApplicationContext) -> Result<u64> {
+    let client = &context.mongo_client;
+    let database = client.database(&context.mongo_database);
+    let collection = database.collection::<DiskEvent>(DISK_EVENTS_COLLECTION);
 
-pub async fn setup_mongo(context: &ApplicationContext) -> Result<Client> {
-    let conn_str = context.get_mongo_url();
-    let client_options = ClientOptions::parse(conn_str).await?;
-    let client = Client::with_options(client_options)?;
-    Ok(client)
+    let count = collection.count_documents(Document::new()).await?;
+
+    Ok(count)
 }
 
-pub async fn count_disk_events(context: &ApplicationContext, client: &Client) -> Result<u64> {
+pub async fn find_disk_events_uuid(
+    context: &ApplicationContext,
+    uuid: Uuid,
+) -> Result<Vec<DiskEvent>> {
+    let client = &context.mongo_client;
     let database = client.database(&context.mongo_database);
-    let collection = database.collection::<DiskEvent>(DISK_EVENT_COLLECTION);
-    let count = collection.count_documents(Document::new()).await?;
-    Ok(count)
+    let collection = database.collection::<DiskEvent>(DISK_EVENTS_COLLECTION);
+    let filter = doc! { "uuid": uuid.to_string() };
 
-    //     match collection.count_documents(None, None).await {
-    //         Ok(count) => {
-    //             let body = json!({
-    //                 "status": "ok",
-    //                 "count": count,
-    //             });
-    //             (StatusCode::OK, body.to_string())
-    //         },
-    //         Err(_) => {
-    //             let body = json!({
-    //                 "status": "error",
-    //                 "message": "Failed to connect to the database",
-    //             });
-    //             (StatusCode::INTERNAL_SERVER_ERROR, body.to_string())
-    //         },
-    //     }
+    let mut cursor = collection.find(filter).await?;
+    let mut result = Vec::new();
+    while let Some(doc) = cursor.try_next().await? {
+        result.push(doc);
+    }
+
+    Ok(result)
+}
+
+pub async fn find_disk_events_serial_number(
+    context: &ApplicationContext,
+    serial_number: String,
+) -> Result<Vec<DiskEvent>> {
+    let client = &context.mongo_client;
+    let database = client.database(&context.mongo_database);
+    let collection = database.collection::<DiskEvent>(DISK_EVENTS_COLLECTION);
+    let filter = doc! { "serial_number": serial_number };
+
+    let mut cursor = collection.find(filter).await?;
+    let mut result = Vec::new();
+    while let Some(doc) = cursor.try_next().await? {
+        result.push(doc);
+    }
+
+    Ok(result)
+}
+
+pub async fn save_disk_event(
+    context: &ApplicationContext,
+    disk_event: DiskEvent,
+) -> Result<InsertOneResult> {
+    let client = &context.mongo_client;
+    let database = client.database(&context.mongo_database);
+    let collection = database.collection::<DiskEvent>(DISK_EVENTS_COLLECTION);
+
+    let result = collection.insert_one(disk_event).await?;
+
+    Ok(result)
+}
+
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    // use super::*;
+
+    #[test]
+    fn test_always_succeed() {
+        assert!(true);
+    }
 }

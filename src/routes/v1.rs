@@ -2,16 +2,27 @@
 
 pub mod disks;
 pub mod events;
+pub mod health;
 
-pub use disks::{DiskResource, DiskResources};
-pub use events::{EventResource, EventResources};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 
-use gotham::router::{build_simple_router, Router};
-use gotham_restful::DrawResources;
+use crate::context::ApplicationContext;
+use crate::routes::v1::events::{
+    get_events, post_closed, post_formatted, post_opened, post_sighted,
+};
+use crate::routes::v1::health::get_health;
 
-pub fn router() -> Router {
-    build_simple_router(|route| {
-        route.resource::<DiskResource>("disks");
-        route.resource::<EventResource>("events");
-    })
+pub fn build_router(context: ApplicationContext) -> Router {
+    // build the routes under /api/v1
+    Router::new()
+        .route("/health", get(get_health))
+        .route("/events/closed", post(post_closed))
+        .route("/events/formatted", post(post_formatted))
+        .route("/events/opened", post(post_opened))
+        .route("/events/sighted", post(post_sighted))
+        .route("/events/:id", get(get_events))
+        .with_state(context)
 }

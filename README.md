@@ -6,14 +6,12 @@ The REST API for the wipac-disk-tracking service is documented below.
 
 The API is rooted at:
 
-    /api/v#
-    
-Where # is the version number of the API under use.
+    /api/v1
 
 ### Disks
-Disks represent a unique archival disk.
-While the disk entity does carry some immutable identifying information, it
-is mostly a container for archival disk events.
+Disks represent a collection of unique archival disks. While the disk
+entity does carry some immutable identifying information, it is mostly
+a container for archival disk events.
 
 #### Routes
 These routes are implemented to work with disks:
@@ -24,7 +22,7 @@ These routes are implemented to work with disks:
     GET  /disks/:disk_id/search?query       Find a disk based on a key-value query
 
 ### Events
-Events represent a record of an event involving an archival disk.
+Events represent a record of an event involving an archival disk.  
 There are four distinct events that are tracked by the system.
 
     sighted     This disk was observed to be loaded in a host that processes archival disks
@@ -37,6 +35,28 @@ The format for each of these events is specified with a JSON Schema file.
 #### Routes
 These routes are implemented to work with events:
 
-    POST /events                Create a new event
+    POST /events/closed         Create a new 'closed' event
+    POST /events/formatted      Create a new 'formatted' event
+    POST /events/opened         Create a new 'opened' event
+    POST /events/sighted        Create a new 'sighted' event
     GET  /events/:event_id      Get the data for a given event
-    GET  /events/search?query   Find an event based on key-value query
+
+## Development
+As typical in a Rust project, you can run the unit and integration tests with:
+
+    cargo test -- --show-output
+
+### MongoDB Tests
+The MongoDB integration test will look for the temporary MongoDB container
+running locally. If you'd rather run the test against a different MongoDB,
+you can supply the URL through this environment variable:
+
+    DESTRUCTIVE_TEST_MONGODB_URL
+
+Note that the integration test is destructive. It may wipe out your collections,
+indexes, or databases! DON'T point this at any data that you want to keep!
+
+If MongoDB is not available, locally or through the provided URL, then a
+message will appear in the output of the tests:
+
+    "MongoDB is not available. Skipping test."

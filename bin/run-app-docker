@@ -10,6 +10,7 @@
 : ${MONGODB_DATABASE:="disk_tracking"}
 : ${MONGODB_HOSTNAME:="localhost"}
 : ${MONGODB_PASSWORD:="hunter2"}
+: ${MONGODB_TIMEOUT_SECS:="5"}
 : ${MONGODB_USERNAME:="disk_tracking"}
 : ${MONGODB_PORT_NUMBER:="27017"}
 : ${PORT:="8080"}
@@ -20,6 +21,7 @@ docker run \
     --env=MONGODB_HOSTNAME=${DOCKER_MONGO_CONTAINER_NAME} \
     --env=MONGODB_PASSWORD=${MONGODB_PASSWORD} \
     --env=MONGODB_PORT_NUMBER=${MONGODB_PORT_NUMBER} \
+    --env=MONGODB_TIMEOUT_SECS=${MONGODB_TIMEOUT_SECS} \
     --env=MONGODB_USERNAME=${MONGODB_USERNAME} \
     --env=PORT=${PORT} \
     --env=RUST_LOG=debug \
