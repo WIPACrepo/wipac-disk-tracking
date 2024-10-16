@@ -2,6 +2,7 @@
 
 #[derive(Debug)]
 pub enum ApplicationError {
+    AuthError(String),
     ContextError(String),
     MongoError(String),
 }
@@ -22,6 +23,9 @@ pub type Result<T> = std::result::Result<T, ApplicationError>;
 
 pub fn get_error_message(e: ApplicationError) -> String {
     match e {
+        ApplicationError::AuthError(x) => {
+            format!("disk-tracking: OAuth Error: {x}")
+        }
         ApplicationError::ContextError(x) => {
             format!("disk-tracking: Unable to build application context: {x}")
         }

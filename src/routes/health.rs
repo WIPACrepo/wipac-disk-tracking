@@ -1,6 +1,6 @@
 // health.rs
 
-use axum::{extract::State, http::StatusCode, response::IntoResponse};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Router};
 use axum_extra::response::ErasedJson;
 use serde::Serialize;
 
@@ -14,6 +14,13 @@ struct HealthResponse {
     pub count: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
+}
+
+pub fn build_router(context: ApplicationContext) -> Router {
+    // build the routes under /health
+    Router::new()
+        .route("/health", get(get_health))
+        .with_state(context)
 }
 
 pub async fn get_health(context: State<ApplicationContext>) -> impl IntoResponse {

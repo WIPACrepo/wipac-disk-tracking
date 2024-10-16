@@ -4,7 +4,11 @@ use axum::{
     extract::ConnectInfo, extract::Request, http::StatusCode, middleware::Next, response::Response,
 };
 use core::net::SocketAddr;
-use log::info;
+use log::{debug, info};
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct EmptyExtra;
 
 pub async fn log_request(
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
@@ -25,5 +29,21 @@ pub async fn log_request(
     info!("{} {} {}", client_ip, req.method(), req.uri());
 
     // call the next middleware in the chain
+    Ok(next.run(req).await)
+}
+
+pub async fn log_token(req: Request, next: Next) -> Result<Response, StatusCode> {
+    // if we've got an 'Authorization' header in the request
+    if let Some(header) = req.headers().get("Authorization") {
+        // and we can obtain the value of that header as a string slice
+        if let Ok(token) = header.to_str() {
+            // log about it, and continue in the request processing stack
+            debug!("Authorization: {}", token);
+            return Ok(next.run(req).await);
+        }
+    }
+
+    // log about the fact that no token was found
+    debug!("Authorization: None");
     Ok(next.run(req).await)
 }

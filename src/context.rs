@@ -14,6 +14,9 @@ pub struct ApplicationContext {
     pub mongo_password: String,
     pub mongo_port: String,
     pub mongo_user: String,
+    pub oauth_audience: String,
+    pub oauth_realm: String,
+    pub oauth_url: String,
     pub port: u16,
 }
 
@@ -31,6 +34,12 @@ pub async fn build_context() -> Result<ApplicationContext> {
     let mongo_host = env::var("MONGODB_HOSTNAME").unwrap_or_else(|_| "localhost".into());
     let mongo_port = env::var("MONGODB_PORT_NUMBER").unwrap_or_else(|_| "27017".into());
     let mongo_database = env::var("MONGODB_DATABASE").unwrap_or_else(|_| "disk_tracking".into());
+
+    // read oauth configuration from the environment
+    let oauth_audience = env::var("OAUTH_AUDIENCE").unwrap_or_else(|_| "disk-tracking".into());
+    let oauth_realm = env::var("OAUTH_REALM").unwrap_or_else(|_| "IceCube".into());
+    let oauth_url =
+        env::var("OAUTH_URL").unwrap_or_else(|_| "https://keycloak.icecube.wisc.edu/auth".into());
 
     // read application port from the environment
     let port_str = env::var("PORT").unwrap_or_else(|_| "8080".into());
@@ -74,6 +83,9 @@ pub async fn build_context() -> Result<ApplicationContext> {
         mongo_password,
         mongo_port,
         mongo_user,
+        oauth_audience,
+        oauth_realm,
+        oauth_url,
         port,
     })
 }
