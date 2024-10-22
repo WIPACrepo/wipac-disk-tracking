@@ -11,7 +11,7 @@ export MONGODB_PASSWORD=${MONGODB_PASSWORD:="hunter2"}
 export MONGODB_PORT_NUMBER=${MONGODB_PORT_NUMBER:="27017"}
 export MONGODB_TIMEOUT_SECS=${MONGODB_TIMEOUT_SECS:="5"}
 export MONGODB_USERNAME=${MONGODB_USERNAME:="disk_tracking"}
-export OAUTH_AUDIENCE=${OAUTH_AUDIENCE:="long-term-archive"}  # TODO: CHANGE THIS TO disk-tracking !!!
+export OAUTH_AUDIENCE=${OAUTH_AUDIENCE:="disk-tracking"}
 export OAUTH_REALM=${OAUTH_REALM:="IceCube"}
 export OAUTH_URL=${OAUTH_URL:="https://keycloak.icecube.wisc.edu/auth"}
 export PORT=${PORT:="8080"}
