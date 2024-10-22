@@ -1,42 +1,110 @@
 # wipac-disk-tracking
 Archival media tracking service for WIPAC
 
-## API
-The REST API for the wipac-disk-tracking service is documented below.
+## Routes
+The following routes are supported in the wipac-disk-tracking service:
 
-The API is rooted at:
+### API /
+These routes live at the root of the service.
 
-    /api/v#
-    
-Where # is the version number of the API under use.
+#### GET /health
+This route allows a client to query the health of the service. Mostly,
+this is just a check if the service can access the database that stores
+the disk events. This route requires no authentication, and can be
+checked with a simple `curl` command:
 
-### Disks
-Disks represent a unique archival disk.
-While the disk entity does carry some immutable identifying information, it
-is mostly a container for archival disk events.
+    curl -v http://localhost:8080/health && echo ""
 
-#### Routes
-These routes are implemented to work with disks:
+A healthy response is 200, along with some JSON indicating the status
+of the service. Here `count` is a simple count of disk events stored
+in the backing database:
 
-    GET  /disks/:disk_id                    Get the data for a given disk
-    GET  /disks/:disk_id/events             Get all of the events for a given disk
-    GET  /disks/:disk_id/events/:event_id   Get the data for a given event for a given disk
-    GET  /disks/:disk_id/search?query       Find a disk based on a key-value query
+    {
+        "status": "ok",
+        "count": 0
+    }
 
-### Events
-Events represent a record of an event involving an archival disk.
-There are four distinct events that are tracked by the system.
+An unhealthy response is 500, along with some JSON indicating the error
+the service is experiencing connecting to the database:
 
-    sighted     This disk was observed to be loaded in a host that processes archival disks
-    formatted   This disk was given a file system to make it ready for archival purposes
-    opened      This disk was given a label and was designated for active archival activity
-    closed      This disk was determined to full/finished and archival activity stopped
+    {
+        "status": "error",
+        "message": "Failed to connect to the database: MongoError(\"Kind: Server selection timeout: No available servers. Topology: { Type: Single, Servers: [ { Address: localhost:27017, Type: Unknown, Error: Kind: I/O error: Connection refused (os error 111), labels: {} } ] }, labels: {}\")"
+    }
 
-The format for each of these events is specified with a JSON Schema file.
+#### GET /token
+This route allows a client to query the service's view of its token
+issued by Keycloak for authorization. This route exists for debugging
+purposes.
 
-#### Routes
-These routes are implemented to work with events:
+The client can also inspect its token in a service like [jwt.io](https://jwt.io).
 
-    POST /events                Create a new event
-    GET  /events/:event_id      Get the data for a given event
-    GET  /events/search?query   Find an event based on key-value query
+This route offers a view of 'how did the service parse my token' or
+'how does the service see my authorization grants'?
+
+### API /api/v1
+These routes live under /api/v1.
+
+#### GET /events/:event_id
+Get the data for a given event. This route is actually multi-purpose.
+
+If you specify the UUID assigned to an event, you can find the record
+for a specific event:
+
+    GET /api/v1/events/0badfdd0-963a-4b25-9af6-1acc52c5d334
+
+If you specify the serial number of a disk, you can find the records of
+every event referencing that serial number:
+
+    GET /api/v1/events/ZRS1NWBL
+
+In both cases, a successful query will return with the structure like
+this one:
+
+    {
+        "events": [
+            {
+                smartctl-event-here
+            },
+            ...
+            {
+                smartctl-event-here
+            }
+        ]
+    }
+
+#### POST /events/closed
+Create a new 'closed' event. This disk was determined to full/finished
+and archival activity stopped.
+
+#### POST /events/formatted
+Create a new 'formatted' event. This disk was given a file system to
+make it ready for archival purposes.
+
+#### POST /events/opened
+Create a new 'opened' event. This disk was given a label and was
+designated for active archival activity.
+
+#### POST /events/sighted
+Create a new 'sighted' event. This disk was observed to be loaded in a
+host that processes archival disks.
+
+## Development
+As typical in a Rust project, you can run the unit and integration tests with:
+
+    cargo test -- --show-output
+
+### MongoDB Tests
+The MongoDB integration test will look for the temporary MongoDB container
+running locally. If you'd rather run the test against a different MongoDB,
+you can supply the URL through this environment variable:
+
+    DESTRUCTIVE_TEST_MONGODB_URL
+
+Note that the integration test is destructive. It may wipe out your collections,
+indexes, or databases! DON'T point this at any data that you want to keep!
+
+If MongoDB is not available, locally or through the provided URL, then a
+message will appear in the output of the tests:
+
+    "MongoDB is not available. Skipping test."

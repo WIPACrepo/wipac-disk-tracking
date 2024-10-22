@@ -5,6 +5,8 @@
 #----------------------------------------------------------------------------
 FROM rust:slim-bookworm AS build
 
+RUN apt-get update && apt-get install -y libssl-dev pkg-config build-essential
+
 COPY Cargo.lock Cargo.toml /build/
 COPY src /build/src
 

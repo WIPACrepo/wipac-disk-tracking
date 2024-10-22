@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# run-app-docker
+
+# use `docker run` to run an instance of the application in a Docker
+# container. when starting this script, you can provide one of the
+# environment variables listed below to override the defaults
+
+: ${DOCKER_CONTAINER_NAME:="disk_tracking"}
+: ${DOCKER_MONGO_CONTAINER_NAME:="disk_tracking_mongo"}
+: ${MONGODB_DATABASE:="disk_tracking"}
+: ${MONGODB_HOSTNAME:="localhost"}
+: ${MONGODB_PASSWORD:="hunter2"}
+: ${MONGODB_TIMEOUT_SECS:="5"}
+: ${MONGODB_USERNAME:="disk_tracking"}
+: ${MONGODB_PORT_NUMBER:="27017"}
+: ${OAUTH_AUDIENCE:="disk-tracking"}
+: ${OAUTH_REALM:="IceCube"}
+: ${OAUTH_URL:="https://keycloak.icecube.wisc.edu/auth"}
+: ${PORT:="8080"}
+
+docker run \
+    --detach \
+    --env=MONGODB_DATABASE=${MONGODB_DATABASE} \
+    --env=MONGODB_HOSTNAME=${DOCKER_MONGO_CONTAINER_NAME} \
+    --env=MONGODB_PASSWORD=${MONGODB_PASSWORD} \
+    --env=MONGODB_PORT_NUMBER=${MONGODB_PORT_NUMBER} \
+    --env=MONGODB_TIMEOUT_SECS=${MONGODB_TIMEOUT_SECS} \
+    --env=MONGODB_USERNAME=${MONGODB_USERNAME} \
+    --env=OAUTH_AUDIENCE=${OAUTH_AUDIENCE} \
+    --env=OAUTH_URL=${OAUTH_URL} \
+    --env=PORT=${PORT} \
+    --env=RUST_LOG=debug \
+    --link ${DOCKER_MONGO_CONTAINER_NAME}:${DOCKER_MONGO_CONTAINER_NAME} \
+    --name=${DOCKER_CONTAINER_NAME} \
+    --publish ${PORT}:${PORT} \
+    --rm \
+    wipac-disk-tracking:latest-SNAPSHOT
