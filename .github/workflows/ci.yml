@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup update stable && rustup default stable
-      - run: cargo outdated --root-deps-only --exit-code 1
+      - run: tools/ci/check_rust_deps
       - run: cargo fmt --all -- --check
       - run: cargo generate-lockfile --locked
       - run: cargo check --locked
